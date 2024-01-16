@@ -15,6 +15,10 @@ public partial class User
 
     public string? Hash { get; set; }
 
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
     public virtual ICollection<Campground> Campgrounds { get; set; } = new List<Campground>();
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();

@@ -17,8 +17,14 @@ namespace campground_api.Controllers
     {
         private readonly ReviewService _reviewService = reviewService;
 
+        [HttpGet("/api/campground/{id}/reviews")]
+        public async Task<ActionResult<IEnumerable<ReviewListDto>>> GetReviews(int id)
+        {
+            return await _reviewService.GetByCampgroundId(id);
+        }
+
         [HttpPost]
-        public async Task<ActionResult<Review>> PostReview(ReviewDto reviewDto)
+        public async Task<ActionResult<ReviewCreateDto>> PostReview(ReviewCreateDto reviewDto)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             var newReview = await _reviewService.Create(int.Parse(userId), reviewDto);
@@ -26,7 +32,7 @@ namespace campground_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReview(int id, ReviewDto reviewDto)
+        public async Task<IActionResult> PutReview(int id, ReviewCreateDto reviewDto)
         {
             var updatedReview = await _reviewService.Update(id, reviewDto);
             if(updatedReview == null)

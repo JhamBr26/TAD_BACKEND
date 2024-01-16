@@ -20,14 +20,15 @@ namespace campground_api.Controllers
         private readonly CampgroundService _campgroundService = campgroundService;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Campground>>> GetCampgrounds()
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<CampgroundListDto>>> GetCampgrounds()
         {
             return await _campgroundService.GetAll();
         }
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<ActionResult<Campground>> GetCampground(int id)
+        public async Task<ActionResult<CampgroundGetDto>> GetCampground(int id)
         {
             var campground = await _campgroundService.Get(id);
 
@@ -40,7 +41,7 @@ namespace campground_api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Campground>> PostCampground(CampgroundDto campground)
+        public async Task<ActionResult<CampgroundGetDto>> PostCampground(CampgroundCreateDto campground)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
             var newCampground = await _campgroundService.Create(int.Parse(userId), campground);
@@ -48,7 +49,7 @@ namespace campground_api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCampground(int id, CampgroundDto campground)
+        public async Task<IActionResult> PutCampground(int id, CampgroundCreateDto campground)
         {
             var updatedCampground = await _campgroundService.Update(id, campground);
             if(updatedCampground == null)
@@ -68,7 +69,7 @@ namespace campground_api.Controllers
                 return NotFound();
             }
 
-            return campground;
+            return Ok();
         }
     }
 }

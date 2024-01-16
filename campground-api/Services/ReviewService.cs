@@ -1,5 +1,6 @@
 ﻿using campground_api.Models;
 using campground_api.Models.Dto;
+using campground_api.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace campground_api.Services
@@ -12,13 +13,25 @@ namespace campground_api.Services
             _context = context;
         }
 
-        public async Task<ReviewDto> Create(int userID, ReviewDto reviewDto)
+        public async Task<List<ReviewListDto>> GetByCampgroundId(int id)
+        {
+            var reviews = await _context.Reviews
+                .Include(r => r.User)
+                .Where(r => r.CampgroundId == id)
+                .ToListAsync();
+
+            return reviews.Select(Mapper.MapReviewToReviewListDto).ToList();
+        }
+
+        public async Task<ReviewCreateDto> Create(int userID, ReviewCreateDto reviewDto)
         {
             _context.Reviews.Add(new Review()
             {
                 UserId = userID,
                 CampgroundId = reviewDto.CampgroundId,
                 Body = reviewDto.Body,
+                Scoring = reviewDto.Scoring,
+                CreateAt = DateTime.UtcNow,
             });
             await _context.SaveChangesAsync();
             return reviewDto;
@@ -37,7 +50,7 @@ namespace campground_api.Services
 
             return review;
         }
-        public async Task<Review?> Update(int id, ReviewDto reviewDto)
+        public async Task<Review?> Update(int id, ReviewCreateDto reviewDto)
         {
 
             try
@@ -46,6 +59,7 @@ namespace campground_api.Services
                 if(review is null) return null;
 
                 review.Body = reviewDto.Body;
+                review.Scoring = reviewDto.Scoring;
 
                 await _context.SaveChangesAsync();
 

@@ -30,7 +30,7 @@ public partial class CampgroundContext : DbContext
     {
         modelBuilder.Entity<Campground>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__campgrou__3213E83F5EB701C5");
+            entity.HasKey(e => e.Id).HasName("PK__campgrou__3213E83F373CDBB7");
 
             entity.ToTable("campgrounds");
 
@@ -56,12 +56,12 @@ public partial class CampgroundContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Campgrounds)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__campgroun__user___398D8EEE");
+                .HasConstraintName("FK__campgroun__user___5EBF139D");
         });
 
         modelBuilder.Entity<Image>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__images__3213E83FD87E0FCF");
+            entity.HasKey(e => e.Id).HasName("PK__images__3213E83F82D8C66A");
 
             entity.ToTable("images");
 
@@ -73,34 +73,38 @@ public partial class CampgroundContext : DbContext
             entity.HasOne(d => d.Campground).WithMany(p => p.Images)
                 .HasForeignKey(d => d.CampgroundId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__images__campgrou__3C69FB99");
+                .HasConstraintName("FK__images__campgrou__619B8048");
         });
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__reviews__3213E83FE5F9DD6F");
+            entity.HasKey(e => e.Id).HasName("PK__reviews__3213E83FB8C22947");
 
             entity.ToTable("reviews");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Body).HasColumnName("body");
             entity.Property(e => e.CampgroundId).HasColumnName("campground_id");
+            entity.Property(e => e.CreateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("create_at");
+            entity.Property(e => e.Scoring).HasColumnName("scoring");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
             entity.HasOne(d => d.Campground).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.CampgroundId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__reviews__campgro__403A8C7D");
+                .HasConstraintName("FK__reviews__campgro__656C112C");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__reviews__user_id__3F466844");
+                .HasConstraintName("FK__reviews__user_id__6477ECF3");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F02E81379");
+            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F61A52AC9");
 
             entity.ToTable("users");
 
@@ -108,7 +112,15 @@ public partial class CampgroundContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(150)
                 .HasColumnName("email");
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .HasColumnName("first_name");
             entity.Property(e => e.Hash).HasColumnName("hash");
+            entity.Property(e => e.LastName)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .HasColumnName("last_name");
             entity.Property(e => e.Salt).HasColumnName("salt");
             entity.Property(e => e.Username)
                 .HasMaxLength(50)

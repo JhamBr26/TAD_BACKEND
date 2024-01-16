@@ -25,10 +25,17 @@ namespace campground_api.Services
 
         public async Task<User> Create(SignInDto signInDto)
         {
+            if(await _context.Users.AnyAsync(u => u.Username == signInDto.Username))
+            {
+                throw new Exception("Username already exists");
+            }
+
             var user = new User()
             {
                 Username = signInDto.Username,
                 Email = signInDto.Email,
+                FirstName = signInDto.FirstName,
+                LastName = signInDto.LastName,
                 Salt = Encript.GenerateSalt(),
             };
 

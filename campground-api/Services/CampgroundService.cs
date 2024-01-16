@@ -1,5 +1,6 @@
 ﻿using campground_api.Models;
 using campground_api.Models.Dto;
+using campground_api.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace campground_api.Services
@@ -12,12 +13,32 @@ namespace campground_api.Services
             _context = context;
         }
 
-        public async Task<List<Campground>> GetAll() =>
-            await _context.Campgrounds.ToListAsync();
+        public async Task<List<CampgroundListDto>> GetAll()
+        {
+            var campgrounds = await _context.Campgrounds
+                .Include(c => c.Images)
+                .Include(c => c.Reviews)
+                .ToListAsync();
 
-        public async Task<Campground?> Get(int id) =>
-            await _context.Campgrounds.FindAsync(id);
-        public async Task<Campground?> Create(int userId, CampgroundDto campgroundDto)
+            // mapear a lista de campgrounds para uma lista de CampgroundListDto
+            return campgrounds.Select(Mapper.MapCampgroundToCampgroundListDto).ToList();
+        }
+
+        public async Task<CampgroundGetDto?> Get(int id)
+        {
+            var campground = await _context.Campgrounds
+                .Include(c => c.Images)
+                .Include(c => c.Reviews)
+                .ThenInclude(r => r.User)
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if(campground == null) return null;
+
+            return Mapper.MapCampgroundToCampgroundGetDto(campground);
+        }
+           
+        public async Task<CampgroundGetDto?> Create(int userId, CampgroundCreateDto campgroundDto)
         {
             Campground? newCampground = null;
             try
@@ -49,21 +70,19 @@ namespace campground_api.Services
 
                 await _context.SaveChangesAsync();
 
-                newCampground = await this.Get(newCampground.Id);
+                return await this.Get(newCampground.Id);
             }
             catch(Exception)
             {
-
                 throw;
             }
 
-            return newCampground;
         }
 
         public async Task<Campground?> Delete(int id)
         {
             var campground = await _context.Campgrounds.FindAsync(id);
-            if (campground == null)
+            if(campground == null)
             {
                 return null;
             }
@@ -74,13 +93,10 @@ namespace campground_api.Services
             return campground;
         }
 
-        public async Task<Campground?> Update(int id, CampgroundDto campgroundDto)
+        public async Task<CampgroundGetDto?> Update(int id, CampgroundCreateDto campgroundDto)
         {
             var campground = await _context.Campgrounds.FindAsync(id);
-            if(campground == null)
-            {
-                return null;
-            }
+            if(campground == null) return null;
 
             campground.UserId = campground.UserId;
             campground.Title = campgroundDto.Title;
@@ -106,7 +122,7 @@ namespace campground_api.Services
             });
 
             await _context.SaveChangesAsync();
-            return campground;
+            return await this.Get(campground.Id);
         }
 
     }

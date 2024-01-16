@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace campground_api.Models;
 
@@ -25,6 +24,6 @@ public partial class Campground
     public virtual ICollection<Image> Images { get; set; } = new List<Image>();
 
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
-    [JsonIgnore]
+
     public virtual User User { get; set; } = null!;
 }
