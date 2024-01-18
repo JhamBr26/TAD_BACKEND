@@ -63,6 +63,4 @@ orleans.codegen.cs
 # (https://github.com/github/gitignore/pull/1529#issuecomment-104372622)
 #bower_components/
 
-campground-api/appsettings.json
-campground-api/appsettings.Development.json
 /campground-api/appsettings.json
