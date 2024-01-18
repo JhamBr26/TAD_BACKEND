@@ -68,11 +68,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins("https://campgrounds-frontend.vercel.app/", "http://localhost")
                 .AllowAnyHeader()
+                .AllowCredentials()
                 .AllowAnyMethod();
         });
 });
+
 
 builder.Services.AddDbContext<CampgroundContext>(
     options =>

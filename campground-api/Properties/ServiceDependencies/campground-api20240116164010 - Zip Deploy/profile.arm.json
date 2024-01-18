@@ -21,7 +21,7 @@
     },
     "resourceName": {
       "type": "string",
-      "defaultValue": "campground-api20240115022846",
+      "defaultValue": "campground-api20240116164010",
       "metadata": {
         "description": "Name of the main resource to be created by this template."
       }
